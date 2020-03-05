@@ -2,3 +2,5 @@
 obj
 bin
 *.dbgit 
+.vscode
+appsettings.json
