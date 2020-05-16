@@ -4,3 +4,4 @@ bin
 *.dbgit 
 .vscode
 appsettings.json
+*.db
