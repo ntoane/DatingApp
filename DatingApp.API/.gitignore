@@ -1,7 +1,8 @@
 .vscode
+*.db
+datingapp.db
 obj
 bin
 *.dbgit 
 .vscode
 appsettings.json
-*.db
