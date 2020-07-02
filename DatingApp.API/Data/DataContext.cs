@@ -14,6 +14,7 @@ namespace DatingApp.API.Data
         public DbSet<Photo> Photos { get; set; }
         public DbSet<Like> Likes { get; set; }
         public DbSet<Message> Messages { get; set; }
+        public DbSet<Visit> Visits { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -28,10 +29,10 @@ namespace DatingApp.API.Data
                     .HasForeignKey(ur => ur.RoleId)
                     .IsRequired();
 
-                    userRole.HasOne(ur => ur.User)
-                    .WithMany(r => r.UserRoles)
-                    .HasForeignKey(ur => ur.UserId)
-                    .IsRequired();
+                userRole.HasOne(ur => ur.User)
+                .WithMany(r => r.UserRoles)
+                .HasForeignKey(ur => ur.UserId)
+                .IsRequired();
             });
 
             builder.Entity<Like>()
@@ -60,6 +61,21 @@ namespace DatingApp.API.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Photo>().HasQueryFilter(p => p.IsApproved);
+
+            builder.Entity<Visit>()
+                .HasKey(k => new { k.VisitorId, k.VisiteeId });
+
+            builder.Entity<Visit>()
+                .HasOne(u => u.Visitee)
+                .WithMany(u => u.Visitors)
+                .HasForeignKey(u => u.VisiteeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Visit>()
+                .HasOne(u => u.Visitor)
+                .WithMany(u => u.Visitees)
+                .HasForeignKey(u => u.VisitorId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

@@ -15,7 +15,7 @@ export class UserService {
 
   constructor(private http: HttpClient) { }
 
-  getUsers(page?, itemsPerpage?, userParams?, likesParam?): Observable<PaginatedResult<User[]>> {
+  getUsers(page?, itemsPerpage?, userParams?, likesParam?, visitsParams?): Observable<PaginatedResult<User[]>> {
     const paginationResult: PaginatedResult<User[]> = new PaginatedResult<User []>();
 
     let params = new HttpParams();
@@ -38,6 +38,20 @@ export class UserService {
 
     if (likesParam === 'Likees') {
       params = params.append('Likees', 'true');
+    }
+
+    if (visitsParams != null) {
+      if (visitsParams.visit === 'Visitors') {
+        params = params.append('Visitors', 'true');
+      }
+
+      if (visitsParams.visit === 'Visitees') {
+        params = params.append('Visitees', 'true');
+      }
+
+      if (visitsParams.prevMonth === 'Yes') {
+        params = params.append('prevmonth', visitsParams.prevMonth);
+      }
     }
 
     return this.http.get<User[]>(this.baseUrl + 'users', { observe: 'response', params})
@@ -70,6 +84,10 @@ export class UserService {
 
   sendLike(id: number, recipientId: number) {
     return this.http.post(this.baseUrl + 'users/' + id + '/like/' + recipientId, {});
+  }
+
+  sendVisit(id: number, recipientId: number) {
+    return this.http.post(this.baseUrl + 'users/' + id + '/visit/' + recipientId, {});
   }
 
   getMessages(id: number, page?, itemsPerPage?, messageContainer?) {

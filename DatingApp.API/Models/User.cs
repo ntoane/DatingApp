@@ -22,5 +22,7 @@ namespace DatingApp.API.Models
         public virtual ICollection<Message> MessagesSent { get; set; }
         public virtual ICollection<Message> MessagesReceived { get; set; }
         public virtual ICollection<UserRole> UserRoles { get; set; }
+        public virtual ICollection<Visit> Visitors { get; set; }
+        public virtual ICollection<Visit> Visitees { get; set; }
     }
 }

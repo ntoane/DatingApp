@@ -8,16 +8,17 @@ import { catchError } from 'rxjs/operators';
 
 @Injectable()
 
-export class ListsResolver implements Resolve<User> {
+export class VisitProfileResolver implements Resolve<User[]> {
     pageNumber = 1;
     pageSize = 5;
-    likesParam = 'Likers';
+    visitsParam: any = {};
 
     constructor(private userService: UserService, private router: Router,
                 private alertify: AlertifyService) {}
 
-    resolve(route: ActivatedRouteSnapshot): Observable<User> {
-        return this.userService.getUsers(this.pageNumber, this.pageSize, null, this.likesParam).pipe(
+    resolve(route: ActivatedRouteSnapshot): Observable<User[]> {
+        this.visitsParam.visit = 'Visitors';
+        return this.userService.getUsers(this.pageNumber, this.pageSize, null, null, this.visitsParam).pipe(
             catchError(error => {
                 this.alertify.error('Problem retrieving data');
                 this.router.navigate(['/home']);

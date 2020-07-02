@@ -1,0 +1,42 @@
+<div class="text-center mt-3">
+  <h2>{{visitsParams.visit === 'Visitors' ? 'Members who visited my profile' : 'Members who I\'ve visited thier profile'}} : {{pagination.totalItems}}</h2>
+</div>
+
+<div class="container mt-3">
+
+  <div class="row">
+    <div class="btn-group">
+      <button class="btn btn-primary" [(ngModel)]="visitsParams.visit" btnRadio="Visitors"
+            (click)="loadUsers()">Members who visited me</button>
+      <button class="btn btn-primary" [(ngModel)]="visitsParams.visit" btnRadio="Visitees"
+            (click)="loadUsers()">Members who I visited</button>
+    </div>
+    
+    <div class="col">
+      <div class="btn-group float-right">
+        <button type="button" class="btn btn-primary" [(ngModel)]="visitsParams.prevMonth" btnRadio="No" 
+           (click)="loadUsers()">All Visits</button>
+        <button type="button" class="btn btn-primary" [(ngModel)]="visitsParams.prevMonth" btnRadio="Yes"
+           (click)="loadUsers()">Visits in the past month</button>
+      </div>
+    </div>
+  </div>
+
+  <br />
+
+  <div class="row">
+    <div *ngFor="let user of users" class="col-sm-6 col-md-4 col-lg-4 col-xl-2">
+      <app-member-card [user]="user"></app-member-card>
+    </div>
+  </div>
+
+</div>
+
+<div class="d-flex justify-content-center">
+  <pagination [boundaryLinks]="true" [totalItems]="pagination.totalItems"
+              [itemsPerPage]="pagination.itemsPerPage" [(ngModel)]="pagination.currentPage"
+              (pageChanged)="pageChanged($event)" previousText="&lsaquo;" nextText="&rsaquo;"
+              firstText="&laquo;" lastText="&raquo;">
+
+  </pagination>
+</div>

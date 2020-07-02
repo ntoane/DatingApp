@@ -18,6 +18,9 @@ namespace DatingApp.API.Helpers
         public string OrderBy { get; set; }
         public bool Likees { get; set; }
         public bool Likers { get; set; }
+        public bool Visitees { get; set; }
+        public bool Visitors { get; set; }
+        public string PrevMonth { get; set; }
 
     }
 }

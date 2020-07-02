@@ -9,6 +9,9 @@
       <li class="nav-item" routerLinkActive="active">
         <a class="nav-link" [routerLink]="['/lists']" >Lists</a>
       </li>
+      <li *appHasRole="['VIP']" class="nav-item" routerLinkActive="active">
+        <a class="nav-link" [routerLink]="['/visits']" >Visits</a>
+      </li>
       <li class="nav-item" routerLinkActive="active">
         <a class="nav-link" [routerLink]="['/messages']" >Messages</a>
       </li>

@@ -21,6 +21,11 @@ namespace DatingApp.API.Data
             _context.Add(entity);
         }
 
+        public void Update<T>(T entity) where T : class
+        {
+            _context.Update(entity);
+        }
+
         public void Delete<T>(T entity) where T : class
         {
             _context.Remove(entity);
@@ -48,7 +53,7 @@ namespace DatingApp.API.Data
         {
             var query = _context.Users.Include(p => p.Photos).AsQueryable();
 
-            if(isCurrentUser)
+            if (isCurrentUser)
                 query = query.IgnoreQueryFilters();
 
             var user = await query.FirstOrDefaultAsync(u => u.Id == id);
@@ -73,6 +78,18 @@ namespace DatingApp.API.Data
             {
                 var userLikees = await GetUserLikes(userParams.UserId, userParams.Likers);
                 users = users.Where(u => userLikees.Contains(u.Id));
+            }
+
+            if (userParams.Visitors)
+            {
+                var userVisitors = await GetUserVisits(userParams.UserId, userParams.Visitors, userParams.PrevMonth);
+                users = users.Where(u => userVisitors.Contains(u.Id));
+            }
+
+            if (userParams.Visitees)
+            {
+                var userVisitees = await GetUserVisits(userParams.UserId, userParams.Visitors, userParams.PrevMonth);
+                users = users.Where(u => userVisitees.Contains(u.Id));
             }
 
             if (userParams.MinAge != 18 || userParams.MaxAge != 99)
@@ -113,6 +130,36 @@ namespace DatingApp.API.Data
             }
         }
 
+        private async Task<IEnumerable<int>> GetUserVisits(int id, bool visitors, string PrevMonth)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+
+            if (visitors)
+            {
+                if (PrevMonth == "Yes") {
+                    var startOfTthisMonth = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);       
+                    var firstDay = startOfTthisMonth.AddMonths(-1);
+                    var lastDay = startOfTthisMonth.AddDays(-1);
+
+                    return user.Visitors.Where(u => u.DateAdded >= firstDay && u.DateAdded <=lastDay && u.VisiteeId == id).Select(i => i.VisitorId);
+                }else {
+                    return user.Visitors.Where(u => u.VisiteeId == id).Select(i => i.VisitorId);
+                }
+            }
+            else
+            {
+                if (PrevMonth == "Yes") {
+                    var startOfTthisMonth = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);       
+                    var firstDay = startOfTthisMonth.AddMonths(-1);
+                    var lastDay = startOfTthisMonth.AddDays(-1);
+
+                    return user.Visitees.Where(u => u.DateAdded >= firstDay && u.DateAdded <=lastDay && u.VisitorId == id).Select(i => i.VisiteeId);
+                }else {
+                    return user.Visitees.Where(u => u.VisitorId == id).Select(i => i.VisiteeId);
+                }
+            }
+        }
+
         public async Task<bool> SaveAll()
         {
             return await _context.SaveChangesAsync() > 0;
@@ -130,15 +177,15 @@ namespace DatingApp.API.Data
             switch (messageParams.MessageContainer)
             {
                 case "Inbox":
-                    messages = messages.Where(u => u.RecipientId == messageParams.UserId 
+                    messages = messages.Where(u => u.RecipientId == messageParams.UserId
                         && u.RecipientDeleted == false);
                     break;
                 case "Outbox":
-                    messages = messages.Where(u => u.SenderId == messageParams.UserId 
+                    messages = messages.Where(u => u.SenderId == messageParams.UserId
                         && u.SenderDeleted == false);
                     break;
                 default:
-                    messages = messages.Where(u => u.RecipientId == messageParams.UserId 
+                    messages = messages.Where(u => u.RecipientId == messageParams.UserId
                         && u.RecipientDeleted == false && u.IsRead == false);
                     break;
             }
@@ -152,14 +199,20 @@ namespace DatingApp.API.Data
         public async Task<IEnumerable<Message>> GetMessageThread(int userId, int recipientId)
         {
             var messages = await _context.Messages
-                .Where(m => m.RecipientId == userId && m.RecipientDeleted == false 
+                .Where(m => m.RecipientId == userId && m.RecipientDeleted == false
                     && m.SenderId == recipientId
-                    || m.RecipientId == recipientId && m.SenderId == userId 
+                    || m.RecipientId == recipientId && m.SenderId == userId
                     && m.SenderDeleted == false)
                 .OrderByDescending(m => m.MessageSent)
                 .ToListAsync();
 
             return messages;
+        }
+
+        public async Task<Visit> GetVisit(int userId, int recipientId)
+        {
+            return await _context.Visits.FirstOrDefaultAsync(u =>
+                u.VisitorId == userId && u.VisiteeId == recipientId);
         }
     }
 }

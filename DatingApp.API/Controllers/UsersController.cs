@@ -104,5 +104,42 @@ namespace DatingApp.API.Controllers
             return BadRequest("Failed to like user");
         }
 
+        [HttpPost("{id}/visit/{recipientId}")]
+        public async Task<IActionResult> VisitUser(int id, int recipientId)
+        {
+            if (id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+                return Unauthorized();
+
+            var visit = await _repo.GetVisit(id, recipientId);
+
+            if (visit == null)
+            {
+                visit = new Visit
+                {
+                    VisitorId = id,
+                    VisiteeId = recipientId,
+                    DateAdded = DateTime.Now
+                };
+
+                _repo.Add<Visit>(visit);
+
+                if (await _repo.SaveAll())
+                    return Ok();
+            }
+            else
+            {
+                visit.DateAdded = DateTime.Now;
+
+                _repo.Update<Visit>(visit);
+                if (await _repo.SaveAll())
+                    return Ok();
+            }
+
+            if (await _repo.GetUser(recipientId, false) == null)
+                return NotFound();
+
+            return BadRequest("Failed to visit user");
+        }
+
     }
 }

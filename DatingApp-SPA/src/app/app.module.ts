@@ -44,6 +44,8 @@ import { UserManagementComponent } from './admin/user-management/user-management
 import { PhotoManagementComponent } from './admin/photo-management/photo-management.component';
 import { AdminService } from './_services/admin.service';
 import { RolesModalComponent } from './admin/roles-modal/roles-modal.component';
+import { VisitsComponent } from './visits/visits.component';
+import { VisitProfileResolver } from './_resolvers/visit-profile.resolver';
 
 export function tokenGetter() {
    return localStorage.getItem('token');
@@ -67,7 +69,8 @@ export function tokenGetter() {
       HasRoleDirective,
       UserManagementComponent,
       PhotoManagementComponent,
-      RolesModalComponent
+      RolesModalComponent,
+      VisitsComponent
    ],
    imports: [
       BrowserModule,
@@ -94,7 +97,8 @@ export function tokenGetter() {
          }
       })
    ],
-   providers: [
+
+providers: [
       AuthService,
       UserService,
       AuthGuard,
@@ -104,6 +108,7 @@ export function tokenGetter() {
       MemberEditResolver,
       PreventUnsavedChanges,
       ListsResolver,
+      VisitProfileResolver,
       MessagesResolver,
       AdminService
    ],

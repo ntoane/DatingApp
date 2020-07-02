@@ -7,14 +7,14 @@ import { ActivatedRoute } from '@angular/router';
 import { AlertifyService } from '../_services/alertify.service';
 
 @Component({
-  selector: 'app-lists',
-  templateUrl: './lists.component.html',
-  styleUrls: ['./lists.component.css']
+  selector: 'app-visits',
+  templateUrl: './visits.component.html',
+  styleUrls: ['./visits.component.css']
 })
-export class ListsComponent implements OnInit {
+export class VisitsComponent implements OnInit {
   users: User[];
   pagination: Pagination;
-  likesParam: string;
+  visitsParams: any = {};
 
   constructor(private authService: AuthService, private userService: UserService,
               private route: ActivatedRoute, private alertify: AlertifyService) { }
@@ -24,11 +24,12 @@ export class ListsComponent implements OnInit {
       this.users = data.users.result;
       this.pagination = data.users.pagination;
     });
-    this.likesParam = 'Likers';
+    this.visitsParams.visit = 'Visitors';
+    this.visitsParams.prevMonth = 'No';
   }
 
   loadUsers() {
-    this.userService.getUsers(this.pagination.currentPage, this.pagination.itemsPerPage, null, this.likesParam)
+    this.userService.getUsers(this.pagination.currentPage, this.pagination.itemsPerPage, null, null, this.visitsParams)
       .subscribe(
         (res: PaginatedResult<User[]>) => {
         this.users = res.result;
